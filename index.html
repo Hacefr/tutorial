@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Handbook & Wiki</title>
+    <!-- Authentic In-Game Minecraft Font -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/South-Paw/typeface-minecraft@master/index.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Minecraft', monospace;
+            -webkit-font-smoothing: none;
+            -moz-osx-font-smoothing: none;
+        }
+
+        body {
+            background-color: #12100e;
+            background-image: 
+                radial-gradient(#1e1a16 15%, transparent 16%),
+                radial-gradient(#1e1a16 15%, transparent 16%);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            color: #e0d5c1;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+        }
+
+        .handbook-wrapper {
+            width: 100%;
+            max-width: 980px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Top Bar */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #2b180d;
+            border: 4px solid #140b06;
+            box-shadow: inset 2px 2px 0px #4d2b17, inset -2px -2px 0px #0a0503;
+            padding: 10px 16px;
+        }
+
+        .book-main-title {
+            color: #ffffff;
+            font-size: 15px;
+            text-shadow: 2px 2px #000;
+            margin: 0;
+            text-transform: uppercase;
+        }
+
+        /* Minecraft Button */
+        .mc-btn {
+            background: #737373;
+            border: 2px solid #000;
+            box-shadow: inset 2px 2px 0px #dbdbdb, inset -2px -2px 0px #3b3b3b;
+            color: #ffffff;
+            font-size: 11px;
+            padding: 8px 14px;
+            cursor: pointer;
+            text-shadow: 1px 1px #1f1f1f;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .mc-btn:hover:not(:disabled) {
+            background: #4e659b;
+            box-shadow: inset 2px 2px 0px #839ccf, inset -2px -2px 0px #24355a;
+        }
+
+        .mc-btn:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
+
+        /* Layout Grid */
+        .workspace {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 15px;
+            align-items: start;
+        }
+
+        /* Chapter Sidebar */
+        .chapter-sidebar {
+            background: #2b180d;
+            border: 4px solid #140b06;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.7), inset 2px 2px 0px #4d2b17, inset -2px -2px 0px #0a0503;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .sidebar-header {
+            color: #ffaa00;
+            font-size: 12px;
+            padding-bottom: 8px;
+            margin-bottom: 4px;
+            border-bottom: 2px dashed #4d2b17;
+            text-transform: uppercase;
+        }
+
+        .chapter-tab {
+            background: #1c1008;
+            border: 2px solid #000;
+            color: #cbbba4;
+            padding: 9px 10px;
+            font-size: 11px;
+            text-align: left;
+            cursor: pointer;
+            box-shadow: inset 1px 1px 0px #3a2010, inset -1px -1px 0px #0a0503;
+            transition: all 0.1s;
+            line-height: 1.3;
+        }
+
+        .chapter-tab:hover {
+            background: #442614;
+            color: #ffffff;
+            transform: translateX(2px);
+        }
+
+        .chapter-tab.active {
+            background: #6e3319;
+            border-color: #ffaa00;
+            color: #ffffff;
+            box-shadow: inset 1px 1px 0px #9b4b27, inset -1px -1px 0px #381a0d;
+        }
+
+        /* Main Reader Page */
+        .book-page {
+            background: #24140b;
+            border: 4px solid #140b06;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.7), inset 2px 2px 0px #452413, inset -2px -2px 0px #0a0503;
+            padding: 24px;
+            min-height: 650px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .chapter-view {
+            display: none;
+        }
+
+        .chapter-view.active {
+            display: block;
+        }
+
+        .chapter-tag {
+            color: #ffaa00;
+            font-size: 11px;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .chapter-heading {
+            color: #ffffff;
+            font-size: 18px;
+            margin: 0 0 16px 0;
+            text-shadow: 2px 2px #000;
+            border-bottom: 2px solid #452413;
+            padding-bottom: 8px;
+        }
+
+        .prose {
+            color: #d8cebc;
+            font-size: 12px;
+            line-height: 1.8;
+            margin-bottom: 16px;
+        }
+
+        /* Clickable Chapter Jump Link */
+        .chapter-jump {
+            color: #ffaa00;
+            text-decoration: underline;
+            cursor: pointer;
+            padding: 2px 4px;
+        }
+
+        .chapter-jump:hover {
+            color: #ffff55;
+            background: #3b2010;
+        }
+
+        /* Looping Video Showcase Frame */
+        .video-box {
+            background: #110904;
+            border: 3px solid #000;
+            box-shadow: inset 2px 2px 0px #351a0b, inset -2px -2px 0px #050201;
+            padding: 10px;
+            margin: 16px 0;
+        }
+
+        .video-player {
+            width: 100%;
+            max-height: 380px;
+            display: block;
+            border: 2px solid #000;
+            background: #000;
+            object-fit: cover;
+        }
+
+        .video-label {
+            font-size: 10px;
+            color: #ffff55;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Command Box */
+        .cmd {
+            background: #000000;
+            border: 2px solid #4a4a4a;
+            color: #55ff55;
+            padding: 3px 6px;
+            font-size: 11px;
+            display: inline-block;
+            box-shadow: inset 1px 1px 0 #222;
+        }
+
+        .cmd-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .cmd-list li {
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        /* Bottom Controls */
+        .page-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 2px dashed #452413;
+            padding-top: 16px;
+            margin-top: 24px;
+        }
+
+        .page-indicator {
+            font-size: 11px;
+            color: #9d8b7a;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #12100e; }
+        ::-webkit-scrollbar-thumb { background: #4d2b17; border: 1px solid #000; }
+
+        @media (max-width: 760px) {
+            .workspace { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="handbook-wrapper">
+        
+        <!-- TOP NAV: Link back to Repository 1 -->
+        <div class="top-nav">
+            <h1 class="book-main-title">&#128214; Server Handbook</h1>
+            <a href="https://yourusername.github.io/main-repo/" class="mc-btn">&#9664; Back to Portal</a>
+        </div>
+
+        <div class="workspace">
+            
+            <!-- TABLE OF CONTENTS (6 CHAPTERS) -->
+            <div class="chapter-sidebar">
+                <div class="sidebar-header">Chapters</div>
+                <button class="chapter-tab active" onclick="goToChapter(1)">Ch. 1: Getting Started</button>
+                <button class="chapter-tab" onclick="goToChapter(2)">Ch. 2: Claim Land</button>
+                <button class="chapter-tab" onclick="goToChapter(3)">Ch. 3: Sell and Buy</button>
+                <button class="chapter-tab" onclick="goToChapter(4)">Ch. 4: Custom Crafters & GUIs</button>
+                <button class="chapter-tab" onclick="goToChapter(5)">Ch. 5: QOL Commands</button>
+                <button class="chapter-tab" onclick="goToChapter(6)">Ch. 6: How to Trust</button>
+            </div>
+
+            <!-- CHAPTER VIEWER PANE -->
+            <div class="book-page">
+                <div>
+
+                    <!-- ================= CHAPTER 1 ================= -->
+                    <div id="chapter-1" class="chapter-view active">
+                        <div class="chapter-tag">Chapter I</div>
+                        <h2 class="chapter-heading">How to Get Started</h2>
+                        
+                        <p class="prose">
+                            Welcome! When you first join OneBlock you must accept this EULA and terms of service!
+                        </p>
+
+                        <div class="video-box">
+                            <video class="video-player" autoplay loop muted playsinline>
+                                <source src="tutorial/chapter_1/1.mp4" type="video/mp4">
+                            </video>
+                            <div class="video-label">&#9654; Video 1: Accepting EULA and Terms of Service</div>
+                        </div>
+
+                        <p class="prose">
+                            After you have done so, you can head to the main block in the middle, dirt you will have to mine it to obtain it! You can keep mining it for a long time to get to sell if you are ready to sell head to 
+                            <a href="javascript:void(0)" onclick="goToChapter(3)" class="chapter-jump">&#9758; Chapter 3 (How to sell and buy)</a>.
+                        </p>
+
+                        <div class="video-box">
+                            <video class="video-player" autoplay loop muted playsinline>
+                                <source src="tutorial/chapter_1/2.mp4" type="video/mp4">
+                            </video>
+                            <div class="video-label">&#9654; Video 2: Mining the main OneBlock</div>
+                        </div>
+                    </div>
+
+                    <!-- ================= CHAPTER 2 ================= -->
+                    <div id="chapter-2" class="chapter-view">
+                        <div class="chapter-tag">Chapter II</div>
+                        <h2 class="chapter-heading">How to Claim Land</h2>
+                        
+                        <p class="prose">
+                            To claim land you must use a golden shovel below is the recipe on how to craft it:
+                        </p>
+
+                        <div class="video-box">
+                            <video class="video-player" autoplay loop muted playsinline>
+                                <source src="tutorial/chapter_2/1.mp4" type="video/mp4">
+                            </video>
+                            <div class="video-label">&#9654; Video 1: Crafting the golden shovel</div>
+                        </div>
+
+                        <p class="prose">
+                            To actually claim land you will have to select one of your corners that is your land:
+                        </p>
+
+                        <div class="video-box">
+                            <video class="video-player" autoplay loop muted playsinline>
+                                <source src="tutorial/chapter_2/2.mp4" type="video/mp4">
+                            </video>
+                            <div class="video-label">&#9654; Video 2: Selecting your first corner</div>
+                        </div>
+
+                        <p class="prose">
+                            Next to finish you will select the second opposite corner:
+                        </p>
+
+                        <div class="video-box">
+                            <video class="video-player" autoplay loop muted playsinline>
+                                <source src="tutorial/chapter_2/3.mp4" type="video/mp4">
+                            </video>
+                            <div class="video-label">&#9654; Video 3: Selecting the opposite corner</div>
+                        </div>
+
+                        <p class="prose">
+                            To trust your friends to build here go to 
+                            <a href="javascript:void(0)" onclick="goToChapter(6)" class="chapter-jump">&#9758; Chapter 6 (How to trust)</a>.
+                        </p>
+                    </div>
+
+                    <!-- ================= CHAPTER 3 ================= -->
+                    <div id="chapter-3" class="chapter-view">
+                        <div class="chapter-tag">Chapter III</div>
+                        <h2 class="chapter-heading">How to Sell and Buy</h2>
+                        
+                        <p class="prose">
+                            To sell you will need to do these commands: <span class="cmd">/sellgui</span> <span class="cmd">/sellhand all</span>. I would recommend using the command <span class="cmd">/sellgui</span> though!
+                        </p>
+
+                        <div class="video-box">
+                            <video class="video-player" autoplay loop muted playsinline>
+                                <source src="tutorial/chapter_3/1.mp4" type="video/mp4">
+                            </video>
+                            <div class="video-label">&#9654; Video 1: Using the sell GUI</div>
+                        </div>
+
+                        <p class="prose">
+                            Here is how to buy once you have had enough money do this command <span class="cmd">/shop</span> and select a category, then item. then amount after, buy!
+                        </p>
+
+                        <div class="video-box">
+                            <video class="video-player" autoplay loop muted playsinline>
+                                <source src="tutorial/chapter_3/2.mp4" type="video/mp4">
+                            </video>
+                            <div class="video-label">&#9654; Video 2: Browsing and buying from /shop</div>
+                        </div>
+                    </div>
+
+                    <!-- ================= CHAPTER 4 ================= -->
+                    <div id="chapter-4" class="chapter-view">
+                        <div class="chapter-tag">Chapter IV</div>
+                        <h2 class="chapter-heading">How to Use Custom Crafters & Custom GUIs</h2>
+                        
+                        <p class="prose">
+                            I will first show you how to use the smithing table: hold your diamond item on your main hand and right click (or double click) the smithing table. Make sure you have at least 2 netherite ingots!
+                        </p>
+
+                        <div class="video-box">
+                            <video class="video-player" autoplay loop muted playsinline>
+                                <source src="tutorial/chapter_4/1.mp4" type="video/mp4">
+                            </video>
+                            <div class="video-label">&#9654; Video 1: Upgrading gear with the Smithing Table</div>
+                        </div>
+
+                        <p class="prose">
+                            Here is how to look at the graves shop using the command <span class="cmd">/grave</span>:
+                        </p>
+
+                        <div class="video-box">
+                            <video class="video-player" autoplay loop muted playsinline>
+                                <source src="tutorial/chapter_4/2.mp4" type="video/mp4">
+                            </video>
+                            <div class="video-label">&#9654; Video 2: Checking out the Graves shop</div>
+                        </div>
+                    </div>
+
+                    <!-- ================= CHAPTER 5 ================= -->
+                    <div id="chapter-5" class="chapter-view">
+                        <div class="chapter-tag">Chapter V</div>
+                        <h2 class="chapter-heading">How to Use QOL Commands</h2>
+                        
+                        <p class="prose">
+                            You can do these commands:
+                        </p>
+
+                        <ul class="cmd-list">
+                            <li><span class="cmd">/msg &lt;playername&gt;</span> — This tells the targeted players a message!</li>
+                            <li><span class="cmd">/pettrust &lt;playername&gt;</span> — This allows you to share pets!</li>
+                            <li><span class="cmd">/color &lt;color or hex&gt;</span> — Color like red, green, orange, etc. or hex codes to have a custom username color!</li>
+                            <li><span class="cmd">/hub</span> — Takes you to the hub.</li>
+                            <li><span class="cmd">/leave</span> — Quickly leave minigames.</li>
+                            <li><span class="cmd">/pay &lt;playername&gt; &lt;amount&gt;</span> — You can share and give money to your friends!</li>
+                            <li><span class="cmd">/gravetrust &lt;playername&gt;</span> — This allows the trusted players to claim your grave for you!</li>
+                            <li><span class="cmd">/vop</span> — For transparency! You can see all players with operator permissions at all times.</li>
+                        </ul>
+                    </div>
+
+                    <!-- ================= CHAPTER 6 ================= -->
+                    <div id="chapter-6" class="chapter-view">
+                        <div class="chapter-tag">Chapter VI</div>
+                        <h2 class="chapter-heading">How to Trust</h2>
+                        
+                        <p class="prose">
+                            To trust use this command: <span class="cmd">/trust &lt;playername&gt;</span> — this will allow that player to build on your claim!
+                        </p>
+
+                        <div class="video-box">
+                            <video class="video-player" autoplay loop muted playsinline>
+                                <source src="tutorial/chapter_6/1.mp4" type="video/mp4">
+                            </video>
+                            <div class="video-label">&#9654; Video 1: Using the /trust command</div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- BOTTOM CONTROLS -->
+                <div class="page-controls">
+                    <button class="mc-btn" id="prev-btn" onclick="turnChapter(-1)">&#9664; Prev Chapter</button>
+                    <span class="page-indicator" id="page-indicator">Chapter 1 of 6</span>
+                    <button class="mc-btn" id="next-btn" onclick="turnChapter(1)">Next Chapter &#9654;</button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        let currentChapter = 1;
+        const totalChapters = 6;
+
+        function goToChapter(num) {
+            currentChapter = num;
+            updateView();
+        }
+
+        function turnChapter(delta) {
+            const next = currentChapter + delta;
+            if (next >= 1 && next <= totalChapters) {
+                currentChapter = next;
+                updateView();
+            }
+        }
+
+        function updateView() {
+            document.querySelectorAll('.chapter-view').forEach(v => v.classList.remove('active'));
+            const activeView = document.getElementById(`chapter-${currentChapter}`);
+            if (activeView) activeView.classList.add('active');
+
+            const tabs = document.querySelectorAll('.chapter-tab');
+            tabs.forEach((tab, index) => {
+                if (index + 1 === currentChapter) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+
+            document.getElementById('page-indicator').innerText = `Chapter ${currentChapter} of ${totalChapters}`;
+            document.getElementById('prev-btn').disabled = (currentChapter === 1);
+            document.getElementById('next-btn').disabled = (currentChapter === totalChapters);
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        updateView();
+    </script>
+
+</body>
+</html>
